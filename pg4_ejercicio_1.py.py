@@ -1,27 +1,60 @@
-def calcular_promedio(notas):
-    promedio = sum(notas) / len(notas)
-    return promedio
-#Funcion para calcular el promedio de los estudiantes
-def calcular_porcentaje_aprobados(notas):
-    aprobados = sum(1 for nota in notas if nota >= 70)
-    porcentaje = (aprobados / len(notas)) * 100
-    return porcentaje
+def capturar_pasajeros():
+    pasajeros = []
+    for dia in range(1, 6):  # 5 días de la semana
+        print(f"Dia {dia}:")
+        pasajeros_dia = []
+        for servicio in range(1, 5):  # 4 servicios
+            while True:
+                cantidad = int(input(f"Ingrese la cantidad de pasajeros para el servicio {servicio}: "))
+                if cantidad <= 60:
+                    pasajeros_dia.append(cantidad)
+                    break
+                else:
+                    print("La cantidad ingresada supera la capacidad máxima del autobús (60 pasajeros).")
+        pasajeros.append(pasajeros_dia)
+    return pasajeros
 
-curso_programacion = {
-    "Estudiante1": [80, 75, 85, 90, 88],
-    "Estudiante2": [70, 65, 75, 80, 72],
-    "Estudiante3": [90, 85, 95, 88, 92],
-    "Estudiante4": [60, 75, 70, 68, 72],
-    "Estudiante5": [85, 90, 88, 92, 86]
-}
-#Funcion para cacular el promedio general de los estudiantes
-notas_totales = [nota for notas in curso_programacion.values() for nota in notas]
-promedio_general = calcular_promedio(notas_totales)
-print("Promedio general del curso:", promedio_general)
+def calcular_promedio_por_dia(pasajeros):
+    promedios = []
+    for dia in pasajeros:
+        promedio_dia = sum(dia) / len(dia)
+        promedios.append(promedio_dia)
+    return promedios
 
-for estudiante, notas in curso_programacion.items():
-    promedio_estudiante = calcular_promedio(notas)
-    print(f"Promedio de {estudiante}: {promedio_estudiante}")
- 
-porcentaje_aprobados = calcular_porcentaje_aprobados(notas_totales)
-print("Porcentaje de estudiantes aprobados:", porcentaje_aprobados)
+def calcular_promedio_general(pasajeros):
+    total_pasajeros = sum(sum(dia) for dia in pasajeros)
+    total_dias = len(pasajeros)
+    return total_pasajeros / (total_dias * 4)  # 4 servicios por día
+
+def mejor_servicio(pasajeros):
+    max_pasajeros = max(sum(dia) for dia in pasajeros)
+    for i, dia in enumerate(pasajeros, start=1):
+        for j, pasajeros_servicio in enumerate(dia, start=1):
+            if sum(dia) == max_pasajeros:
+                return f"El mejor servicio es el {j} en el dia {i}"
+
+def momento_menos_pasajeros(pasajeros):
+    min_pasajeros = min(sum(dia) for dia in pasajeros)
+    for i, dia in enumerate(pasajeros, start=1):
+        for j, pasajeros_servicio in enumerate(dia, start=1):
+            if sum(dia) == min_pasajeros:
+                return f"El momento con menos pasajeros es el servicio {j} en el dia {i}"
+
+def escribir_resultados(promedios_por_dia, promedio_general, mejor_serv, menos_pasajeros):
+    with open("resultados.txt", "w") as file:
+        file.write("Promedio de pasajeros por dia:\n")
+        for i, promedio in enumerate(promedios_por_dia, start=1):
+            file.write(f"Dia {i}: {promedio}\n")
+        file.write("\n")
+
+        file.write(f"Promedio general de pasajeros: {promedio_general}\n\n")
+        file.write(f"{mejor_serv}\n\n")
+        file.write(f"{menos_pasajeros}\n")
+if __name__ == "__main__":
+    pasajeros = capturar_pasajeros()
+    promedios_por_dia = calcular_promedio_por_dia(pasajeros)
+    promedio_general = calcular_promedio_general(pasajeros)
+    mejor_serv = mejor_servicio(pasajeros)
+    menos_pasajeros = momento_menos_pasajeros(pasajeros)
+    escribir_resultados(promedios_por_dia, promedio_general, mejor_serv, menos_pasajeros)
+    print("Los resultados han sido guardados en el archivo 'resultados.txt'.")
